@@ -16,14 +16,16 @@ import com.google.gson.Gson;
 @Controller
 public class UserController {
 
-	@Autowired //서버를 만들 때 언옵테이션 필수.
+	@Autowired
 	UserService userService;
 	
 	@RequestMapping("/login.do") 
-    public String login(Model model) throws Exception{
-
-        return "/login";
+    public String login(Model model) throws Exception{ 
+		
+        return "/login"; 
     }
+	
+	
 	@RequestMapping(value = "/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String login(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -31,7 +33,7 @@ public class UserController {
 		System.out.println(map);
 		resultMap = userService.userLogin(map);
 		
-		return new Gson().toJson(resultMap);
+		return new Gson().toJson(resultMap); //외부 패키지 갖다쓴거. json형식으로 파싱해서 주겠다? [{}, {}]->리스트 안에 맵이 있는 형식이 json
 	}
 	
 	
