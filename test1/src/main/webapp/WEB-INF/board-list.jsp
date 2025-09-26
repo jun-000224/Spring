@@ -8,7 +8,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="/js/page-change.js"></script>
-
     <style>
         table, tr, td, th{
             border : 1px solid black;
@@ -27,31 +26,41 @@
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-		<div>
-			<input v-model="keyword" placeholder="검색어">
-			<button @click="fnInfo">검색</button>
-		</div>
         <div>
+            <select v-model="kind" @change="fnList">
+                <option value=""> :: 전체 :: </option>
+                <option value="1"> :: 공지사항 :: </option>
+                <option value="2"> :: 자유게시판 :: </option>
+                 <option value="3"> :: 문의사항 :: </option>
+            </select>
+
+            <select v-model="sortBy" @change="fnList">
+                <option value="num"> :: 번호순 :: </option>
+                <option value="title"> :: 제목순 :: </option>
+                <option value="view"> :: 조회순 :: </option>
+            </select>
             <table>
                 <tr>
-                    <th>학번</th>
-                    <th>이름</th>
-                    <th>학과</th>
-                    <th>학년</th>
-                    <th>성별</th>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>조회수</th>
+                    <th>작성일</th>
                     <th>삭제</th>
                 </tr>
                 <tr v-for="item in list">
-                    <td>{{item.stuNo}}</td>
-                    <td><a href="javascript::" @click="fnView(item.stuNo)">{{item.stuNo}}</a></td>
-                    <td>{{item.stuDept}}</td>
-                    <td>{{item.stuGrade}}</td>
-                    <td>{{item.stuGender}}</td>
-                    <td><button @click="fnRemove(item.stuNo)">삭제</button></td>
+                    <td>{{item.boardNo}}</a></td>
+                    <td><a href="javascript::" @click="fnView(item.boardNo)">{{item.title}}</a></td>
+                    <td>{{item.userId}}</td>
+                    <td>{{item.cnt}}</td>
+                    <td>{{item.cdate}}</td>
+                    <td><button @click="fnRemove(item.boardNo)">삭제</button></td>
                 </tr>
             </table>
+
+            <button @click="fnAdd()" style ="margin-top : 10px">등록</button>
         </div>
-		
+        
     </div>
 </body>
 </html>
@@ -61,61 +70,54 @@
         data() {
             return {
                 // 변수 - (key : value)
-				keyword : "",
-                list : []
+                list : [],
+                kind : "",
+                sortBy : "num"
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
             fnList: function () {
                 let self = this;
-                let param = {};
+                let param = {
+                    kind : self.kind,
+                    sortBy : self.sortBy
+                };
                 $.ajax({
-                    url: "stu-list.dox",
+                    url: "board-list.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-						console.log(data);
+                        console.log(data);
                         self.list = data.list;
                     }
                 });
             },
-            fnInfo: function () {
-                let self = this;
-                let param = {
-					keyword : self.keyword
-				};
-                $.ajax({
-                    url: "stu-info.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-						console.log(data);
-                    }
-                });
+            //게시글 추가하가
+            fnAdd: function () {
+                location.href = "board-add.do";
             },
-            fnRemove: function (stuNo) {
+            //게시글 삭제하기
+            fnRemove: function (boardNo) {
                 let self = this;
                 let param = {
-                    stuNo : stuNo
+                    boardNo : boardNo
                 };
                 $.ajax({
-                    url: "stu-delete.dox",
+                    url: "board-delete.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-						alert("삭제되었습니다.");
+                        alert("삭제되었습니다.");
                         self.fnList();
                     }
                 });
-            },
-            fnView : function (stuNo) {
-                pageChange("stu-view.do", {stuNo : stuNo});
-            },
-
+            }, 
+            fnView : function(boardNo){
+                pageChange("board-view.do", {boardNo : boardNo});
+            }
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분

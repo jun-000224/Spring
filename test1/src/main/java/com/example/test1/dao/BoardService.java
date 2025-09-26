@@ -6,58 +6,57 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.test1.mapper.StuMapper;
+import com.example.test1.mapper.BoardMapper;
 import com.example.test1.model.Board;
-import com.example.test1.model.Student;
 
 @Service
-public class StuService {
-
+public class BoardService {
+	
 	@Autowired
-	StuMapper stuMapper;
+	BoardMapper boardMapper;
 	
-	public HashMap<String, Object> stuInfo(HashMap<String, Object> map) {
+	public HashMap<String, Object> getBoardList(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		System.out.println("service => " + map);
-		Student stu = stuMapper.stuInfo(map);
-		if(stu != null) {
-			System.out.println(stu.getStuNo());
-			System.out.println(stu.getStuDept());
-			System.out.println(stu.getStuName());
-		}
-		resultMap.put("info", stu);
-		resultMap.put("result", "success");
-		return resultMap;
-	}
-	
-	public HashMap<String, Object> getStuList(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		List<Student> list = stuMapper.stuList(map);
+		List<Board> list = boardMapper.selectBoardList(map);
 		
 		resultMap.put("list", list);
 		resultMap.put("result", "success");
 		return resultMap;
+		
 	}
-
-	public HashMap<String, Object> removeStudent(HashMap<String, Object> map) {
+	
+	public HashMap<String, Object> removeBoard(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		int cnt = stuMapper.deleteStudent(map);
+		int cnt = boardMapper.deleteBoard(map);
 		
-		resultMap.put("result", "success");
-		return resultMap;
-	}
-
-	public HashMap<String, Object> getStudent(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		Student student = stuMapper.selectStudent(map);
-		
-		resultMap.put("info", student);
 		resultMap.put("result", "success");
 		return resultMap;
 		
 	}
+
+	public HashMap<String, Object> addBoard(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		int cnt = boardMapper.insertBoard(map);
+		
+		resultMap.put("result", "success");
+		return resultMap;
+	}
+	
+	
+	public HashMap<String, Object> getBoard(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		Board board = boardMapper.selectBoard(map);
+		
+		resultMap.put("info", board);
+		resultMap.put("result", "success");
+		return resultMap;
+		
+	}
+	
+	
+	
 }

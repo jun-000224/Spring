@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.test1.mapper.BoardMapper">
+	<select id="selectBoardList" parameterType="hashmap" resultType="com.example.test1.model.Board">
+		SELECT 
+			B.*, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATE
+		FROM TBL_BOARD B
+		WHERE 1=1
+		<if test="kind != '' and kind != null">
+			AND KIND = #{kind}
+		</if>
+		<if test="sortBy == 'num'">
+			ORDER BY BOARDNO ASC
+		</if>
+		<if test="sortBy == 'title'">
+			ORDER BY TITLE ASC
+		</if>
+		<if test="sortBy == 'cnt'">
+			ORDER BY CNT DESC
+		</if>
+		
+		
+	</select>
+	
+	<delete id="deleteBoard" parameterType="hashmap">
+		DELETE FROM TBL_BOARD
+		WHERE BOARDNO = #{boardNo}
+	</delete>
+	
+	<insert id="insertBoard" parameterType="hashmap">
+		INSERT INTO TBL_BOARD 
+		VALUES(B_SEQ.NEXTVAL, #{title}, #{contents}, #{userId}, 0, 0, 1 , SYSDATE, SYSDATE)
+	</insert>
+	
+	<select id="selectBoard" parameterType="hashmap" resultType="com.example.test1.model.Board">
+		SELECT * FROM TBL_BOARD
+		WHERE BOARDNO = #{boardNo}
+	</select>
+	
+</mapper>
+
+
+
