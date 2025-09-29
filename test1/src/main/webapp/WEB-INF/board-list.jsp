@@ -54,11 +54,11 @@
                     <td>{{item.userId}}</td>
                     <td>{{item.cnt}}</td>
                     <td>{{item.cdate}}</td>
-                    <td><button @click="fnRemove(item.boardNo)">삭제</button></td>
+                    <td><button v-if="sessionId == item.userId || status== 'A'" @click="fnRemove(item.boardNo)">삭제</button></td>
                 </tr>
             </table>
 
-            <button @click="fnAdd()" style ="margin-top : 10px">등록</button>
+            <button @click="fnAdd()" style ="margin-top : 10px">글쓰기</button>
         </div>
         
     </div>
@@ -72,7 +72,9 @@
                 // 변수 - (key : value)
                 list : [],
                 kind : "",
-                sortBy : "num"
+                sortBy : "num",
+                sessionId : "${sessionId}",
+                status : "${sessionStauts}"
             };
         },
         methods: {
@@ -96,13 +98,15 @@
             },
             //게시글 추가하가
             fnAdd: function () {
-                location.href = "board-add.do";
+                location.href = "board-add.do"
+                
             },
             //게시글 삭제하기
             fnRemove: function (boardNo) {
                 let self = this;
                 let param = {
-                    boardNo : boardNo
+                    boardNo : boardNo,
+                    userId : userId
                 };
                 $.ajax({
                     url: "board-delete.dox",

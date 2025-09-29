@@ -12,37 +12,27 @@
             border : 1px solid black;
             border-collapse: collapse;
             padding : 5px 10px;
+            text-align: center;
         }
         th{
             background-color: beige;
         }
-        input{
-            width: 350px;
+        tr:nth-child(even){
+            background-color: azure;
         }
     </style>
 </head>
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-        <div>
-            <table>
-                <tr>
-                    <th>제목</th>
-                    <td><input v-model="title" placeholder="제목을 입력하세요"></td>
-                </tr>
-                <tr>
-                    <th>작성자</th>
-                    <td>${sessionId}</td>
-                </tr>
-                <tr>
-                    <th>내용</th>
-                    <td><textarea v-model="contents" cols="50" rows="20"></textarea></td>
-                </tr>
-            </table>
-            <div>
-                <button @click="fnAdd">저장</button>
-            </div>
-        </div>
+         {{sessionName}}님 환영합니다!
+         메인 페이지입니다!
+         <div>
+            <a href="/board-list.do">
+            <button>게시판으로 이동</button>
+            </a>
+            <button @click="fnLogout">로그아웃</button>
+         </div>
     </div>
 </body>
 </html>
@@ -52,30 +42,23 @@
         data() {
             return {
                 // 변수 - (key : value)
-                title : "",
-                userId : "",
-                contents : "",
-                sessionId : "${sessionId}"
+                sessionId : "${sessionId}",
+                sessionName : "${sessionName}"
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnAdd: function () {
+            fnLogout: function () {
                 let self = this;
-                let param = {
-                    title : self.title,
-                    userId : self.userId,
-                    contents : self.userId,
-                    sessionId : "${sessionId}"
-                };
+                let param = {};
                 $.ajax({
-                    url: "board-add.dox",
+                    url: "/member/logout.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        alert("등록되었습니다");
-                        location.href="board-list.do"
+                        alert(data.msg);
+                        location.href="/member/login.do"
                     }
                 });
             }
@@ -83,10 +66,6 @@
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
-            if(self.sessionId == ""){
-                alert("로그인 후 이용해주세요!");
-                location.href="/member/login.do";
-            }
         }
     });
 
