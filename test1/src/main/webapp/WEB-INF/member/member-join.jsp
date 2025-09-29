@@ -43,6 +43,9 @@
             <div>
                 주소 : <input v-model="addr"><button @click="fnAddr">주소검색</button>
             </div>
+            <div>
+                문자인증 : <input> <button @click="fnSms">인증번호 전송</button>
+            </div>
         </div>
     </body>
 
@@ -96,6 +99,20 @@
                 fnResult : function(roadFullAddr, addrDetail, zipNo){
                     let self = this;
                     self.addr = roadFullAddr;
+                },
+                fnSms : function(){
+                    let self = this;
+                    let param = {
+                    };
+                    $.ajax({
+                        url: "/send-one",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            console.log(data);
+                        }
+                    });
                 }
             }, // methods
             mounted() {
