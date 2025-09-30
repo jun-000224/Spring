@@ -43,7 +43,7 @@
                 </tr>
                 <tr v-for="item in list">
                     <td>{{item.stuNo}}</td>
-                    <td><a href="javascript::" @click="fnView(item.stuNo)">{{item.stuNo}}</a></td>
+                    <td><a href="javascript:;" @click="fnView(item.stuNo)">{{item.stuName}}</a></td>
                     <td>{{item.stuDept}}</td>
                     <td>{{item.stuGrade}}</td>
                     <td>{{item.stuGender}}</td>
@@ -112,10 +112,9 @@
                     }
                 });
             },
-            fnView : function (stuNo) {
-                pageChange("stu-view.do", {stuNo : stuNo});
-            },
-
+            fnView(stuNo){
+                pageChange("/stu-view.do", {stuNo : stuNo});
+            }
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분
@@ -125,4 +124,4 @@
     });
 
     app.mount('#app');
-</script>
+</script> 

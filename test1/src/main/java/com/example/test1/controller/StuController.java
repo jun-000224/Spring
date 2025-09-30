@@ -27,6 +27,12 @@ public class StuController {
         return "/stu-list";
     }
 	
+	@RequestMapping("/stu-view.do") 
+    public String view(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{ 
+		request.setAttribute("stuNo", map.get("stuNo"));
+        return "/stu-view";
+    }
+	
 	@RequestMapping(value = "/stu-info.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String login(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -55,24 +61,14 @@ public class StuController {
 		return new Gson().toJson(resultMap);
 	}
 	
-	//view이동 컨트롤러
-	@RequestMapping("/stu-view.do") 
-    public String view(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{ 
-		System.out.println(map);
-		request.setAttribute("stuNo", map.get("stuNo"));
-        return "/stu-view";
-    }
 	
-	
-	//view내부 데이터 컨트롤러
 	@RequestMapping(value = "/stu-view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String stuView(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	public String searchStudent(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = stuService.getStudent(map);
+		resultMap = stuService.searchStudent(map);
 		
-		return new Gson().toJson(resultMap);
+		return new Gson().toJson(resultMap); 
 	}
-	
 	
 }

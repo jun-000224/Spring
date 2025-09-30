@@ -25,13 +25,21 @@
 </head>
 <body>
     <div id="app">
-        <!-- html 코드는 id가 app인 태그 안에서 작업 -->
+        <div>
+            <select v-model ="searchOption">
+                <option value = "all">::전체::</option>
+                <option value = "title">::제목::</option>
+                <option value = "id">::작성자::</option>
+            </select>
+            검색어 : <input v-model="keyword" @keyup.enter="fnList">
+            <button @click="fnList"> 검색</button>
+        </div>
         <div>
             <select v-model="kind" @change="fnList">
                 <option value=""> :: 전체 :: </option>
                 <option value="1"> :: 공지사항 :: </option>
                 <option value="2"> :: 자유게시판 :: </option>
-                 <option value="3"> :: 문의사항 :: </option>
+                <option value="3"> :: 문의사항 :: </option>
             </select>
 
             <select v-model="sortBy" @change="fnList">
@@ -49,12 +57,14 @@
                     <th>삭제</th>
                 </tr>
                 <tr v-for="item in list">
-                    <td>{{item.boardNo}}</a></td>
-                    <td><a href="javascript::" @click="fnView(item.boardNo)">{{item.title}}</a></td>
+                    <td>{{item.boardNo}}</td>
+                    <td><a href="javascript:;" @click="fnView(item.boardNo)">{{item.title}}</a>
+                        <span v-if="item.commentCnt != 0" style = "color : red">[{{item.commentCnt}}]</span>
+                    </td>
                     <td>{{item.userId}}</td>
                     <td>{{item.cnt}}</td>
                     <td>{{item.cdate}}</td>
-                    <td><button v-if="sessionId == item.userId || status== 'A'" @click="fnRemove(item.boardNo)">삭제</button></td>
+                    <td><button v-if="sessionId == item.userId || status == 'A'" @click="fnRemove(item.boardNo)">삭제</button></td>
                 </tr>
             </table>
 
@@ -73,8 +83,11 @@
                 list : [],
                 kind : "",
                 sortBy : "num",
+                keyword: "",
+                searchOption : "all", //검색옵션 (기본 : 전체)
+
                 sessionId : "${sessionId}",
-                status : "${sessionStauts}"
+                status : "${sessionStatus}" // sessionStauts -> sessionStatus 오타 수정
             };
         },
         methods: {
@@ -83,7 +96,9 @@
                 let self = this;
                 let param = {
                     kind : self.kind,
-                    sortBy : self.sortBy
+                    sortBy : self.sortBy,
+                    keyword : self.keyword,
+                    searchOption : self.searchOption
                 };
                 $.ajax({
                     url: "board-list.dox",
@@ -96,17 +111,20 @@
                     }
                 });
             },
-            //게시글 추가하가
+            //게시글 추가하기
             fnAdd: function () {
                 location.href = "board-add.do"
-                
             },
             //게시글 삭제하기
             fnRemove: function (boardNo) {
+                if (!confirm("정말 삭제하시겠습니까?")) {
+                    return;
+                }
+                
                 let self = this;
                 let param = {
                     boardNo : boardNo,
-                    userId : userId
+                    userId : self.sessionId // userId -> self.sessionId 로 수정
                 };
                 $.ajax({
                     url: "board-delete.dox",
@@ -121,6 +139,9 @@
             }, 
             fnView : function(boardNo){
                 pageChange("board-view.do", {boardNo : boardNo});
+            },
+            fnSearch : function(keyword){
+                // fnList로 통합되었으므로 비워둡니다.
             }
         }, // methods
         mounted() {

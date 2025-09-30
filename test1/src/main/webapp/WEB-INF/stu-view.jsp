@@ -36,7 +36,7 @@
                 </tr>
                 <tr>
                     <th>전체 시험 평균점수</th>
-                    <td>{{info.avgScore}}</td>
+                    <td>{{info.enrAvg}}</td>
                 </tr>
             </table>
     </div>
@@ -54,13 +54,13 @@
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnInfo : function (stuNo) {
+            fnView : function (stuNo) {
                 let self = this;
                 let param = {
                     stuNo : self.stuNo
                 };
                 $.ajax({
-                    url: "stu-view.dox",
+                    url: "/stu-view.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
@@ -74,7 +74,7 @@
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
-            this.fnInfo();
+            this.fnView();
         }
     });
 

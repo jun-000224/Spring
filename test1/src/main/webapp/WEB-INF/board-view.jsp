@@ -8,7 +8,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        table, tr, td, th{
+        #board table, tr, td, th{
             border : 1px solid black;
             border-collapse: collapse;
             padding : 5px 10px;
@@ -17,9 +17,7 @@
         th{
             background-color: beige;
         }
-        tr:nth-child(even){
-            background-color: azure;
-        }
+    
     </style>
 </head>
 <body>
@@ -39,6 +37,23 @@
                     <td>{{info.contents}}</td>
                 </tr>
             </table>
+            <hr>
+            <table class="board" id="comment">
+            <tr v-for = "item in commentList">
+                <th>{{item.nickName}}</th>
+                <td>{{item.contents}}</td>
+                <td><button>삭제</button></td>
+                <td><button>수정</button></td>
+            </tr>
+            </table>
+            <hr>
+            <table id="input">
+                <th>입력</th>
+                <td>
+                    <textarea cols="40" rows="5"></textarea>
+                </td>
+                <td><button>저장</button></td>
+            </table>
     </div>
 </body>
 </html>
@@ -49,7 +64,8 @@
             return {
                 // 변수 - (key : value)
                 boardNo : "${boardNo}", //request객체로 보낸 값임.
-                info : {}
+                info : {},
+                commentList : []
             };
         },
         methods: {
@@ -66,7 +82,8 @@
                     data: param,
                     success: function (data) {
                         console.log(data);
-                        self.info = data.info
+                        self.commentList = data.commentList;
+                        self.info = data.info;
                     }
                 });
             }
