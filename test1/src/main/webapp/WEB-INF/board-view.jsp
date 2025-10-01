@@ -33,9 +33,14 @@
                     <td>{{info.userId}}</td>
                 </tr>
                 <tr>
+                    <th>조회수</th>
+                    <td>{{info.cnt}}</td>
+                </tr>
+                <tr>
                     <th>내용</th>
                     <td>{{info.contents}}</td>
                 </tr>
+                
             </table>
             <hr>
             <table class="board" id="comment">
@@ -48,11 +53,11 @@
             </table>
             <hr>
             <table id="input">
-                <th>입력</th>
+                <th>댓글 입력</th>
                 <td>
-                    <textarea cols="40" rows="5"></textarea>
+                    <textarea cols="40" rows="4" v-model="contents"></textarea>
                 </td>
-                <td><button>저장</button></td>
+                <td><button @click="fnCommentAdd">저장</button></td>
             </table>
     </div>
 </body>
@@ -65,7 +70,9 @@
                 // 변수 - (key : value)
                 boardNo : "${boardNo}", //request객체로 보낸 값임.
                 info : {},
-                commentList : []
+                commentList : [],
+                sessionId : "${sessionId}",
+                contents : "" //댓글 입력 v-model로 연결할 변수
             };
         },
         methods: {
@@ -86,12 +93,32 @@
                         self.info = data.info;
                     }
                 });
+            },
+            fnCommentAdd : function (boardNo) {
+                let self = this;
+                let param = {  //xml이랑 연결되는 이름
+                    id : self.sessionId, //작성자 아이디
+                    contents : self.contents, //작성 내용
+                    boardNo : self.boardNo //어떤 게시글것인가
+                };
+                $.ajax({
+                    url: "/comment/add.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        self.contents = "";
+                        self.fnInfo();
+                        
+                    }
+                });
             }
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
             this.fnInfo();
+            
         }
     });
 

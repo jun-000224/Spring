@@ -46,6 +46,7 @@
                 <option value="num"> :: 번호순 :: </option>
                 <option value="title"> :: 제목순 :: </option>
                 <option value="view"> :: 조회순 :: </option>
+                <option value="time"> :: 시간순 :: </option>
             </select>
             <table>
                 <tr>

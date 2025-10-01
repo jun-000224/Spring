@@ -23,7 +23,6 @@
 </head>
 <body>
     <div id="app">
-        <!-- html 코드는 id가 app인 태그 안에서 작업 -->
         <div>
             <table>
                 <tr>
@@ -32,8 +31,7 @@
                 </tr>
                 <tr>
                     <th>작성자</th>
-                    <td>${sessionId}</td>
-                </tr>
+                    <td>{{userId}}</td> </tr>
                 <tr>
                     <th>내용</th>
                     <td><textarea v-model="contents" cols="50" rows="20"></textarea></td>
@@ -51,37 +49,39 @@
     const app = Vue.createApp({
         data() {
             return {
-                // 변수 - (key : value)
                 title : "",
-                userId : "",
+                userId : "${sessionId}", 
                 contents : "",
                 sessionId : "${sessionId}"
             };
         },
         methods: {
-            // 함수(메소드) - (key : function())
             fnAdd: function () {
                 let self = this;
+
                 let param = {
                     title : self.title,
-                    userId : self.userId,
-                    contents : self.userId,
-                    sessionId : "${sessionId}"
+                    userId : self.userId, 
+                    contents : self.contents 
                 };
+                
                 $.ajax({
                     url: "board-add.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        alert("등록되었습니다");
-                        location.href="board-list.do"
+                        alert("등록되었습니다.");
+                        location.href="board-list.do";
+                    },
+                    error: function(xhr, status, error) {
+                        alert("등록에 실패했습니다. 다시 시도해주세요.");
+                        console.error("Error:", error);
                     }
                 });
             }
-        }, // methods
+        },
         mounted() {
-            // 처음 시작할 때 실행되는 부분
             let self = this;
             if(self.sessionId == ""){
                 alert("로그인 후 이용해주세요!");

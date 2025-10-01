@@ -51,6 +51,8 @@ public class BoardService {
 	public HashMap<String, Object> getBoard(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		int cnt = boardMapper.updateCnt(map);
 		Board board = boardMapper.selectBoard(map);
 		List<Comment> commentList = boardMapper.selectCommentList(map);
 		
@@ -59,6 +61,26 @@ public class BoardService {
 		resultMap.put("result", "success");
 		return resultMap;
 		
+	}
+
+	public HashMap<String, Object> addComment(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			
+			int cnt = boardMapper.insertComment(map); //에러가 많이 발생할만한 DB연결 코드
+			resultMap.put("result", "success");
+			resultMap.put("msg", "댓글이 등록되었습니다.");
+			
+			
+		} catch (Exception e) {  //여기로 왔다는건 문제 발생했단 소리
+			
+			resultMap.put("result", "fail");
+			resultMap.put("msg", "서버 오류가 발생했습니다. 다시 시도해주세요.");
+		}
+		
+		return resultMap;
 	}
 	
 	

@@ -4,17 +4,18 @@
 <mapper namespace="com.example.test1.mapper.BoardMapper">
 
 	<select id="selectBoardList" parameterType="hashmap" resultType="com.example.test1.model.Board">
-		SELECT 
-			B.*, 
-			TO_CHAR(B.CDATETIME, 'YYYY-MM-DD') AS CDATE,
-			NVL(T.CCNT, 0) as commentCnt
+		SELECT B.*,
+		DECODE(TO_CHAR(CDATETIME, 'YYYY-MM-DD'), TO_CHAR(SYSDATE,'YYYY-MM-DD') ,
+		TO_CHAR(CDATETIME, 'HH24:MI'), TO_CHAR(CDATETIME, 'YYYY-MM-DD')) AS CDATE,
+		NVL(CCNT,0) AS COMMENTCNT
 		FROM TBL_BOARD B
 		LEFT JOIN (
-			SELECT BOARDNO, COUNT(*) AS CCNT
-			FROM TBL_COMMENT
-			GROUP BY BOARDNO
+		SELECT BOARDNO, COUNT(*) AS CCNT
+		FROM TBL_COMMENT
+		GROUP BY BOARDNO
 		) T ON T.BOARDNO = B.BOARDNO
 		WHERE 1=1
+		
 		<if test="kind != '' and kind != null">
 			AND KIND = #{kind}
 		</if>
@@ -39,6 +40,9 @@
 		</if>
 		<if test="sortBy == 'cnt' or sortBy == 'view'">
 			ORDER BY B.CNT DESC
+		</if>
+		<if test="sortBy == 'time'">
+			ORDER BY B.CDATETIME DESC
 		</if>
 	</select>
 
@@ -66,12 +70,26 @@
 		VALUES(B_SEQ.NEXTVAL, #{title}, #{contents}, #{userId}, 0, 0, 1, SYSDATE, SYSDATE)
 	</insert>
 	
-	
 	<select id="selectCommentList" parameterType="hashmap" resultType="com.example.test1.model.Comment">
 		SELECT C.*, U.NICKNAME
 		FROM TBL_COMMENT C
 		INNER JOIN TBL_USER U ON C.USERID = U.USERID
 		WHERE C.BOARDNO = #{boardNo}
 	</select>
+	
+	
+	<insert id="insertComment" parameterType="hashmap">
+		INSERT INTO TBL_COMMENT
+		VALUES(COMMENT_SEQ.NEXTVAL, #{boardNo}, #{contents}, #{id}, 0, NULL, SYSDATE, SYSDATE) 
+		
+	</insert>
+	
+	
+	<update id="updateCnt" parameterType="hashmap">
+		UPDATE TBL_BOARD
+		SET
+			CNT = CNT +1
+		WHERE BOARDNO = #{boardNo}
+	</update>
 	
 </mapper>
