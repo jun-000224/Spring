@@ -21,6 +21,14 @@
         tr:nth-child(even){
             background-color: azure;
         }
+        #index {
+            margin-right: 5px;
+            text-decoration: none;
+        }
+        .active {
+            color : black;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -35,6 +43,13 @@
             <button @click="fnList"> 검색</button>
         </div>
         <div>
+
+            <select v-model="pageSize" @change="fnList">
+                <option value = "5">5개씩</option>
+                <option value = "10">10개씩</option>
+                <option value = "20">20개씩</option>
+            </select>
+
             <select v-model="kind" @change="fnList">
                 <option value=""> :: 전체 :: </option>
                 <option value="1"> :: 공지사항 :: </option>
@@ -47,6 +62,7 @@
                 <option value="title"> :: 제목순 :: </option>
                 <option value="view"> :: 조회순 :: </option>
                 <option value="time"> :: 시간순 :: </option>
+                <option value="ccnt"> :: 댓글 많은 순 :: </option>
             </select>
             <table>
                 <tr>
@@ -69,6 +85,14 @@
                 </tr>
             </table>
 
+            <div>
+                <a @click="fnLeft">🔻</a>
+                <a href="javascript:;" v-for="num in index" @click="fnPage(num)" id="index">
+                    <span :class="{active : page==num}">{{num}}</span>
+                </a>
+                <a @click="fnRight">🔺</a>
+            </div>
+
             <button @click="fnAdd()" style ="margin-top : 10px">글쓰기</button>
         </div>
         
@@ -87,6 +111,10 @@
                 keyword: "",
                 searchOption : "all", //검색옵션 (기본 : 전체)
 
+                pageSize : 5, //한 페이지에 출력할 개수
+                page : 1,  //최초의 페이지 (1번째 페이지부터 출력한단 의미)
+                index : 0, // 최대 페이지 값 
+
                 sessionId : "${sessionId}",
                 status : "${sessionStatus}" // sessionStauts -> sessionStatus 오타 수정
             };
@@ -99,7 +127,10 @@
                     kind : self.kind,
                     sortBy : self.sortBy,
                     keyword : self.keyword,
-                    searchOption : self.searchOption
+                    searchOption : self.searchOption,
+
+                    pageSize :  self.pageSize,
+                    page : (self.page-1) * self.pageSize
                 };
                 $.ajax({
                     url: "board-list.dox",
@@ -109,6 +140,7 @@
                     success: function (data) {
                         console.log(data);
                         self.list = data.list;
+                        self.index = Math.ceil(data.cnt / self.pageSize);
                     }
                 });
             },
@@ -141,8 +173,23 @@
             fnView : function(boardNo){
                 pageChange("board-view.do", {boardNo : boardNo});
             },
-            fnSearch : function(keyword){
-                // fnList로 통합되었으므로 비워둡니다.
+            fnPage : function(num){
+                let self = this;
+                self.page = num;
+
+                this.fnList();
+            },
+            fnLeft : function(num){
+            if(this.page>1){
+                this.page--;
+                this.fnList();
+            }
+            },
+             fnRight : function(num){
+            if(this.page<this.index){
+                this.page ++;
+                this.fnList();
+            }
             }
         }, // methods
         mounted() {

@@ -13,6 +13,9 @@ public interface BoardMapper {
 	// 게시글 목록
 	List<Board> selectBoardList(HashMap<String, Object> map);
 	
+	// 게시글 전체 개수
+	int selectBoardCnt(HashMap<String, Object> map);
+	
 	// 게시글 삭제
 	int deleteBoard(HashMap<String, Object> map);
 	

@@ -6,7 +6,8 @@
 	<select id="selectBoardList" parameterType="hashmap" resultType="com.example.test1.model.Board">
 		SELECT B.*,
 		DECODE(TO_CHAR(CDATETIME, 'YYYY-MM-DD'), TO_CHAR(SYSDATE,'YYYY-MM-DD') ,
-		TO_CHAR(CDATETIME, 'HH24:MI'), TO_CHAR(CDATETIME, 'YYYY-MM-DD')) AS CDATE,
+		TO_CHAR(CDATETIME, 'HH24:MI'), TO_CHAR(CDATETIME, 'YYYY-MM-DD')) AS
+		CDATE,
 		NVL(CCNT,0) AS COMMENTCNT
 		FROM TBL_BOARD B
 		LEFT JOIN (
@@ -44,20 +45,24 @@
 		<if test="sortBy == 'time'">
 			ORDER BY B.CDATETIME DESC
 		</if>
+		<if test="sortBy == 'ccnt'">
+			ORDER BY CCNT DESC
+		</if>
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 
 	<select id="selectBoard" parameterType="hashmap" resultType="com.example.test1.model.Board">
-	    SELECT 
-	        B.*, 
-	        TO_CHAR(B.CDATETIME, 'YYYY-MM-DD') AS CDATE,
-	        NVL(T.CCNT, 0) as commentCnt
-	    FROM TBL_BOARD B
-	    LEFT JOIN (
-	        SELECT BOARDNO, COUNT(*) AS CCNT
-	        FROM TBL_COMMENT
-	        GROUP BY BOARDNO
-	    ) T ON T.BOARDNO = B.BOARDNO
-	    WHERE B.BOARDNO = #{boardNo}
+		SELECT
+		B.*,
+		TO_CHAR(B.CDATETIME, 'YYYY-MM-DD') AS CDATE,
+		NVL(T.CCNT, 0) as commentCnt
+		FROM TBL_BOARD B
+		LEFT JOIN (
+		SELECT BOARDNO, COUNT(*) AS CCNT
+		FROM TBL_COMMENT
+		GROUP BY BOARDNO
+		) T ON T.BOARDNO = B.BOARDNO
+		WHERE B.BOARDNO = #{boardNo}
 	</select>
 
 	<delete id="deleteBoard" parameterType="hashmap">
@@ -91,5 +96,30 @@
 			CNT = CNT +1
 		WHERE BOARDNO = #{boardNo}
 	</update>
+	
+	<select id="selectBoardCnt" parameterType="hashmap" resultType="int">
+    SELECT COUNT(*)
+    FROM TBL_BOARD
+    WHERE 1=1
+
+    <if test="kind != '' and kind != null">
+        AND KIND = #{kind}
+    </if>
+
+    <if test="searchOption == 'all' and keyword != '' and keyword != null">
+        AND (TITLE LIKE '%' || #{keyword} || '%'
+            OR USERID LIKE '%' || #{keyword} || '%'
+        )
+    </if>
+    <if test="searchOption == 'title' and keyword != '' and keyword != null">
+        AND TITLE LIKE '%' || #{keyword} || '%'
+    </if>
+    <if test="searchOption == 'id' and keyword != '' and keyword != null">
+        AND USERID LIKE '%' || #{keyword} || '%'
+    </if>
+</select>
+
+
+
 	
 </mapper>

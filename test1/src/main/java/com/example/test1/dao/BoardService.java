@@ -21,6 +21,9 @@ public class BoardService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		List<Board> list = boardMapper.selectBoardList(map);
 		
+		int cnt = boardMapper.selectBoardCnt(map);
+		
+		resultMap.put("cnt", cnt);
 		resultMap.put("list", list);
 		resultMap.put("result", "success");
 		return resultMap;
