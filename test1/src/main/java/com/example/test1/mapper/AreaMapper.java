@@ -7,17 +7,21 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.test1.model.Area;
 
-
 @Mapper
 public interface AreaMapper {
-
-	// 게시글 목록
+	// 지역 전체 목록
 	List<Area> selectAreaList(HashMap<String, Object> map);
 	
-	//카운트 
-	int selectAreaCount(HashMap<String, Object> map);
+	// 지역 전체 개수
+	int selectAreaCnt(HashMap<String, Object> map);
 	
-	//시/도 리스트
+	// 시/도 리스트
 	List<Area> selectSiList(HashMap<String, Object> map);
+	
+	// 구 리스트
+	List<Area> selectGuList(HashMap<String, Object> map);
+	
 }
+
+
 

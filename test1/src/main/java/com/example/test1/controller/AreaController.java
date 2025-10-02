@@ -2,6 +2,8 @@ package com.example.test1.controller;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,24 +21,20 @@ public class AreaController {
 	@Autowired
 	AreaService areaService;
 	
-	//리스트 do
 	@RequestMapping("/area/list.do") 
-    public String areaList(Model model) throws Exception{ 
-		
-        return "area-list";
+    public String view(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("boardNo", map.get("boardNo"));
+        return "/area/area-list";
     }
 	
-	//리스트 dox
 	@RequestMapping(value = "/area/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String getArea(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	public String areaList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = areaService.getAreaList(map);
 		
 		return new Gson().toJson(resultMap);
 	}
-	
-	// 별도의 시 리스트
 	@RequestMapping(value = "/area/si.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String si(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -45,5 +43,13 @@ public class AreaController {
 		
 		return new Gson().toJson(resultMap);
 	}
-
+	
+	@RequestMapping(value = "/area/gu.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String gu(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = areaService.getGuList(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 }

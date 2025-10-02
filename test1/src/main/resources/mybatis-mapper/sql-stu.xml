@@ -19,25 +19,27 @@
 		WHERE STU_NO = #{stuNo}
 	</delete>
 	
-	<select id="selectStudent" parameterType="hashmap" resultType="com.example.test1.model.Student">
-		SELECT
-		S.STU_NO,
-		S.STU_NAME,
-		S.STU_DEPT,
-		NVL(AVG(E.ENR_GRADE), 0) AS ENR_AVG, -- 학생 개인의 평균 성적
-		T.TOTAL_AVG -- 전체 학생의 평균 성적
-		FROM
-		STUDENT S
-		LEFT JOIN
-		ENROL E ON S.STU_NO = E.STU_NO
-		CROSS JOIN
-		(SELECT ROUND(AVG(ENR_GRADE), 1) AS TOTAL_AVG FROM ENROL) T
-		WHERE
-		S.STU_NO = #{stuNo}
-		GROUP BY
-		S.STU_NO, S.STU_NAME, S.STU_DEPT, T.TOTAL_AVG
-</select>
+	<delete id="deleteStudentList" parameterType="hashmap">
+		DELETE FROM STUDENT
+		WHERE STU_NO IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
 	
+	<select id="selectStudent" parameterType="hashmap" resultType="com.example.test1.model.Student">
+		SELECT 
+		    S.STU_NO, S.STU_NAME, S.STU_DEPT, NVL(AVG(ENR_GRADE), 0) AS ENR_AVG,
+		    (SELECT ROUND(AVG(ENR_GRADE), 1) FROM ENROL) AS TOTAL_AVG,
+		    TOTAL_AVG2
+		FROM STUDENT S
+		LEFT JOIN ENROL E ON S.STU_NO = E.STU_NO
+		INNER JOIN (
+		    SELECT ROUND(AVG(ENR_GRADE), 1) AS TOTAL_AVG2 FROM ENROL
+		) T ON 1=1
+		WHERE S.STU_NO = #{stuNo}
+		GROUP BY S.STU_NO, S.STU_NAME, S.STU_DEPT, TOTAL_AVG2
+	</select>
 </mapper>
 
 

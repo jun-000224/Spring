@@ -3,13 +3,21 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.test1.mapper.UserMapper">
+	
 	<select id="userLogin" parameterType="hashmap" resultType="com.example.test1.model.User">
 		SELECT *
 		FROM TBL_USER
 		WHERE USERID = #{userId} AND PASSWORD = #{pwd}
 	</select>
 	
+	<insert id="insertUser" parameterType="hashmap">
+		INSERT INTO TBL_USER (USERID, PASSWORD, NAME, ADDR, PHONE, GENDER, STATUS, CDATETIME, UDATETIME)
+		VALUES (#{id}, #{pwd}, #{name}, #{addr}, #{phone}, #{gender}, #{status}, SYSDATE, SYSDATE)
+	</insert>
+	
+	<insert id="insertProfileImg" parameterType="hashmap">
+		INSERT INTO TBL_USER_PROFILE(FILE_NO, USER_ID, FILE_PATH, FILE_NAME, ORG_NAME, FILE_SIZE, EXT)
+		VALUES(PROFILE_FILE_SEQ.NEXTVAL, #{userId}, #{path}, #{fileName}, #{orgName}, #{size}, #{ext})
+	</insert>
+	
 </mapper>
-
-
-

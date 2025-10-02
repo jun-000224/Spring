@@ -7,6 +7,10 @@ public class User {
 	private String nickName;
 	private String gender;
 	
+	private String fileNo;
+	private String fileName;
+	private String filePath;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -36,5 +40,23 @@ public class User {
 	}
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+	public String getFileNo() {
+		return fileNo;
+	}
+	public void setFileNo(String fileNo) {
+		this.fileNo = fileNo;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 }   

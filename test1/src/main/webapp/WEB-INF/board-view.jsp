@@ -38,10 +38,13 @@
                 </tr>
                 <tr>
                     <th>내용</th>
-                    <td>{{info.contents}}</td>
-                </tr>
-                
+                    <td>
+                        <img v-for="item in fileList" :src="item.filePath">
+                        {{info.contents}}
+                    </td>
+                </tr>         
             </table>
+
             <hr>
             <table class="board" id="comment">
             <tr v-for = "item in commentList">
@@ -72,7 +75,8 @@
                 info : {},
                 commentList : [],
                 sessionId : "${sessionId}",
-                contents : "" //댓글 입력 v-model로 연결할 변수
+                contents : "", //댓글 입력 v-model로 연결할 변수
+                fileList : []
             };
         },
         methods: {
@@ -90,6 +94,7 @@
                     success: function (data) {
                         console.log(data);
                         self.commentList = data.commentList;
+                        self.fileList = data.fileList;
                         self.info = data.info;
                     }
                 });

@@ -1,125 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.test1.mapper.BoardMapper">
-
 	<select id="selectBoardList" parameterType="hashmap" resultType="com.example.test1.model.Board">
-		SELECT B.*,
-		DECODE(TO_CHAR(CDATETIME, 'YYYY-MM-DD'), TO_CHAR(SYSDATE,'YYYY-MM-DD') ,
-		TO_CHAR(CDATETIME, 'HH24:MI'), TO_CHAR(CDATETIME, 'YYYY-MM-DD')) AS
-		CDATE,
-		NVL(CCNT,0) AS COMMENTCNT
+		SELECT 
+		    B.*, 
+		    DECODE( TO_CHAR(CDATETIME, 'YYYY-MM-DD'), TO_CHAR(SYSDATE, 'YYYY-MM-DD'), TO_CHAR(CDATETIME, 'HH24:MI:SS'), TO_CHAR(CDATETIME, 'YYYY-MM-DD')  ) AS CDATE,
+		    NVL(CCNT, 0) AS COMMENTCNT
 		FROM TBL_BOARD B
 		LEFT JOIN (
-		SELECT BOARDNO, COUNT(*) AS CCNT
-		FROM TBL_COMMENT
-		GROUP BY BOARDNO
+		    SELECT BOARDNO, COUNT(*) AS CCNT
+		    FROM TBL_COMMENT
+		    GROUP BY BOARDNO
 		) T ON T.BOARDNO = B.BOARDNO
 		WHERE 1=1
-		
 		<if test="kind != '' and kind != null">
 			AND KIND = #{kind}
 		</if>
 		
-		<if test="searchOption == 'all' and keyword != '' and keyword != null">
-			AND (TITLE LIKE '%' || #{keyword} || '%'
-				OR USERID LIKE '%' || #{keyword} || '%'
+		<if test="searchOption == 'all'">
+			AND (
+				TITLE LIKE '%' || #{keyword} || '%' OR
+				USERID LIKE '%' || #{keyword} || '%'
 			)
 		</if>
-		<if test="searchOption == 'title' and keyword != '' and keyword != null">
+		<if test="searchOption == 'title'">
 			AND TITLE LIKE '%' || #{keyword} || '%'
 		</if>
-		<if test="searchOption == 'id' and keyword != '' and keyword != null">
+		<if test="searchOption == 'id'">
 			AND USERID LIKE '%' || #{keyword} || '%'
 		</if>
 		
-		<if test="sortBy == 'num' or sortBy == null or sortBy == ''">
-			ORDER BY B.BOARDNO DESC
-		</if>
-		<if test="sortBy == 'title'">
-			ORDER BY B.TITLE ASC
-		</if>
-		<if test="sortBy == 'cnt' or sortBy == 'view'">
-			ORDER BY B.CNT DESC
-		</if>
-		<if test="sortBy == 'time'">
+		<if test="order == 'time'">
 			ORDER BY B.CDATETIME DESC
 		</if>
-		<if test="sortBy == 'ccnt'">
-			ORDER BY CCNT DESC
+		<if test="order == 'num'">
+			ORDER BY B.BOARDNO ASC
+		</if>
+		<if test="order == 'title'">
+			ORDER BY TITLE ASC
+		</if>
+		<if test="order == 'cnt'">
+			ORDER BY CNT DESC
 		</if>
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+		
 	</select>
-
-	<select id="selectBoard" parameterType="hashmap" resultType="com.example.test1.model.Board">
-		SELECT
-		B.*,
-		TO_CHAR(B.CDATETIME, 'YYYY-MM-DD') AS CDATE,
-		NVL(T.CCNT, 0) as commentCnt
+	
+	<select id="selectBoardCnt" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
 		FROM TBL_BOARD B
-		LEFT JOIN (
-		SELECT BOARDNO, COUNT(*) AS CCNT
-		FROM TBL_COMMENT
-		GROUP BY BOARDNO
-		) T ON T.BOARDNO = B.BOARDNO
-		WHERE B.BOARDNO = #{boardNo}
+		WHERE 1=1
+		<if test="kind != '' and kind != null">
+			AND KIND = #{kind}
+		</if>
+		
+		<if test="searchOption == 'all'">
+			AND (
+				TITLE LIKE '%' || #{keyword} || '%' OR
+				USERID LIKE '%' || #{keyword} || '%'
+			)
+		</if>
+		<if test="searchOption == 'title'">
+			AND TITLE LIKE '%' || #{keyword} || '%'
+		</if>
+		<if test="searchOption == 'id'">
+			AND USERID LIKE '%' || #{keyword} || '%'
+		</if>
+		
+		
+		
 	</select>
-
+	
 	<delete id="deleteBoard" parameterType="hashmap">
 		DELETE FROM TBL_BOARD
 		WHERE BOARDNO = #{boardNo}
 	</delete>
-
-	<insert id="insertBoard" parameterType="hashmap">
-		INSERT INTO TBL_BOARD
-		VALUES(B_SEQ.NEXTVAL, #{title}, #{contents}, #{userId}, 0, 0, 1, SYSDATE, SYSDATE)
+	
+	<insert id="insertBoard" parameterType="hashmap" useGeneratedKeys="true" keyColumn="BOARDNO" keyProperty="boardNo">
+		INSERT INTO TBL_BOARD 
+		VALUES(B_SEQ.NEXTVAL, #{title}, #{contents}, #{userId}, 0, 0, 1 , SYSDATE, SYSDATE)
 	</insert>
+	
+	<select id="selectBoard" parameterType="hashmap" resultType="com.example.test1.model.Board">
+		SELECT *
+		FROM TBL_BOARD
+		WHERE BOARDNO = #{boardNo}
+	</select>
 	
 	<select id="selectCommentList" parameterType="hashmap" resultType="com.example.test1.model.Comment">
 		SELECT C.*, U.NICKNAME
 		FROM TBL_COMMENT C
 		INNER JOIN TBL_USER U ON C.USERID = U.USERID
 		WHERE C.BOARDNO = #{boardNo}
+		ORDER BY C.CDATETIME ASC
 	</select>
-	
 	
 	<insert id="insertComment" parameterType="hashmap">
 		INSERT INTO TBL_COMMENT
-		VALUES(COMMENT_SEQ.NEXTVAL, #{boardNo}, #{contents}, #{id}, 0, NULL, SYSDATE, SYSDATE) 
-		
+		VALUES(COMMENT_SEQ.NEXTVAL, #{boardNo}, #{contents}, #{id}, 0, NULL, SYSDATE, SYSDATE)
 	</insert>
-	
 	
 	<update id="updateCnt" parameterType="hashmap">
 		UPDATE TBL_BOARD
 		SET
-			CNT = CNT +1
+			CNT = CNT + 1
 		WHERE BOARDNO = #{boardNo}
 	</update>
 	
-	<select id="selectBoardCnt" parameterType="hashmap" resultType="int">
-    SELECT COUNT(*)
-    FROM TBL_BOARD
-    WHERE 1=1
-
-    <if test="kind != '' and kind != null">
-        AND KIND = #{kind}
-    </if>
-
-    <if test="searchOption == 'all' and keyword != '' and keyword != null">
-        AND (TITLE LIKE '%' || #{keyword} || '%'
-            OR USERID LIKE '%' || #{keyword} || '%'
-        )
-    </if>
-    <if test="searchOption == 'title' and keyword != '' and keyword != null">
-        AND TITLE LIKE '%' || #{keyword} || '%'
-    </if>
-    <if test="searchOption == 'id' and keyword != '' and keyword != null">
-        AND USERID LIKE '%' || #{keyword} || '%'
-    </if>
-</select>
-
-
-
+	<delete id="deleteBoardList" parameterType="hashmap">
+		DELETE FROM TBL_BOARD
+		WHERE BOARDNO IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<insert id="insertBoardImg" parameterType="hashmap">
+		INSERT INTO TBL_BOARD_FILE
+		VALUES(FILE_SEQ.NEXTVAL, #{boardNo}, #{path}, #{fileName}, #{orgName}, #{size}, #{ext})
+	</insert>
+	
+	<select id="selectFileList" parameterType="hashmap" resultType="com.example.test1.model.Board">
+		SELECT * 
+		FROM TBL_BOARD_FILE
+		WHERE BOARDNO = #{boardNo}
+	</select>
+	
 	
 </mapper>
+
+
+
