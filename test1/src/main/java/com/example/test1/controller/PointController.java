@@ -10,34 +10,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.test1.dao.UserService;
+import com.example.test1.dao.PointService;
 import com.google.gson.Gson;
 
 @Controller
-public class UserController {
-
-	@Autowired
-	UserService userService;
+public class PointController {
 	
-	@RequestMapping("/login.do") 
-    public String login(Model model) throws Exception{ 
+	@Autowired
+	PointService pointService;
+	
+	@RequestMapping("/point/chart.do") 
+    public String chart(Model model) throws Exception{ 
 		
-        return "/login"; 
+        return "/point/chart";
     }
 	
-	
-	@RequestMapping(value = "/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/point/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String login(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	public String list(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		System.out.println(map);
-		resultMap = userService.userLogin(map);
+		resultMap = pointService.getPointList(map);
 		
-		return new Gson().toJson(resultMap); 
+		return new Gson().toJson(resultMap);
 	}
-	
-	
-	
-	
-	
 }

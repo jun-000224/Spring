@@ -1,6 +1,7 @@
 package com.example.test1.dao;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -22,13 +23,41 @@ public class MemberService {
 	public HashMap<String, Object> login(HashMap<String, Object> map){
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		Member member = memberMapeer.memberLogin(map);
-		String message = member != null ? "로그인 성공!" : "로그인 실패!";
-		String result = member != null ? "success" : "fail";
-		
-		if(member != null) {
+		String message = ""; // 로그인 성공 실패 여부 메세지
+		String result = ""; // 로그인 성공 실패 여부
+//		String message = member != null ? "로그인 성공!" : "로그인 실패!";
+//		String result = member != null ? "success" : "fail";
+		if(member != null && member.getCnt() >= 5 ) {
+			message = "비밀번호를 5회 이상 잘못 입력하셨습니다.";
+			result = "fail";
+		} else if(member != null) {		
+			// cnt값을 0으로 초기화
+			memberMapeer.cntInit(map);
+			message = "로그인 성공!";
+			result = "success";
 			session.setAttribute("sessionId", member.getUserId());
 			session.setAttribute("sessionName", member.getName());
 			session.setAttribute("sessionStatus", member.getStatus());
+			if(member.getStatus().equals("A")) {
+				resultMap.put("url", "/mgr/member/list.do");
+			} else {
+				resultMap.put("url", "/main.do");
+			}
+			
+		} else {
+			Member idCheck = memberMapeer.memberCheck(map);
+			if(idCheck != null) {
+				
+				if(idCheck.getCnt() >= 5) {
+					message = "비밀번호를 5회 이상 잘못 입력하셨습니다.";	
+				} else {
+					// 로그인 실패 시 cnt 1 증가
+					memberMapeer.cntIncrease(map);
+					message = "패스워드를 확인해주세요.";		
+				}		
+			} else {
+				message = "아이디가 존재하지 않습니다.";
+			}
 		}
 		
 		resultMap.put("msg", message);
@@ -70,6 +99,35 @@ public class MemberService {
 			resultMap.put("result", "fail");
 		} else {
 			resultMap.put("result", "success");
+		}
+		
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> getMemberList(HashMap<String, Object> map){
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<Member> list =  memberMapeer.selectMemberList(map);
+			resultMap.put("list", list);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}
+		
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> removeCnt(HashMap<String, Object> map){
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			memberMapeer.cntInit(map);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
 		}
 		
 		return resultMap;

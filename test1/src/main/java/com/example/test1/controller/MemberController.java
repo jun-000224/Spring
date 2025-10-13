@@ -2,6 +2,8 @@ package com.example.test1.controller;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +31,19 @@ public class MemberController {
     public String join(Model model) throws Exception{ 
 		
         return "/member/member-join";
+    }
+	
+	@RequestMapping("/mgr/member/list.do") 
+    public String mgr(Model model) throws Exception{ 
+		
+        return "/mgr/member-list";
+    }
+	
+	@RequestMapping("/mgr/member/view.do") 
+    public String view(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{ 
+		
+		request.setAttribute("userId", map.get("userId"));
+        return "/mgr/member-view";
     }
 	
 	@RequestMapping("/addr.do") 
@@ -69,6 +84,24 @@ public class MemberController {
 	public String add(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = memberService.memberInsert(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/mgr/member/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String memberList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = memberService.getMemberList(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/mgr/remove-cnt.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String removeCnt(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = memberService.removeCnt(map);
 		
 		return new Gson().toJson(resultMap);
 	}

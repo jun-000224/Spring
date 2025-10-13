@@ -25,20 +25,6 @@
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-		<div>
-            <div>
-                <label>아이디 : <input v-model="id"></label>
-            </div>
-            <div>
-                <label>비밀번호 : <input type="password" v-model="pwd"></label>
-            </div>
-            <div>
-                <button @click="fnLogin">로그인</button>
-                <a href="/member/join.do"><button>회원가입</button></a>
-            </div>
-        </div>
-		
-		
     </div>
 </body>
 </html>
@@ -48,28 +34,21 @@
         data() {
             return {
                 // 변수 - (key : value)
-                id : "",
-                pwd : ""
+                userId : "${userId}"
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnLogin : function () {
+            fnList: function () {
                 let self = this;
-                let param = {
-                    id : self.id,
-                    pwd : self.pwd
-                };
+                let param = {};
                 $.ajax({
-                    url: "/member/login.dox",
+                    url: "",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        alert(data.msg);
-                        if(data.result == "success"){
-                            location.href = data.url;
-                        }
+
                     }
                 });
             }
