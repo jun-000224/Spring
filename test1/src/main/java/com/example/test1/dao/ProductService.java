@@ -1,9 +1,15 @@
 package com.example.test1.dao;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.test1.mapper.ProductMapper;
 import com.example.test1.model.Menu;
 import com.example.test1.model.Product;
@@ -24,30 +30,38 @@ public class ProductService {
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			resultMap.put("result", "fail");
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
+		
 		return resultMap;
 	}
 
-	public HashMap<String, Object> addProduct(HashMap<String, Object> map) {
+	public HashMap<String, Object> getMenuList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			// 1. TBL_FOOD에 상품 정보 추가
-			productMapper.insertProduct(map); 
-
-			productMapper.insertProductImage(map); 
-			
-
-			resultMap.put("foodNo", map.get("foodNo")); 
+			List<Menu> menuList = productMapper.selectMenuList(map);
+			resultMap.put("menuList", menuList);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			resultMap.put("result", "fail");
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
+		
 		return resultMap;
 	}
 	
-	public List<Menu> getPrimaryMenuList() {
-		return productMapper.selectPrimaryMenuList();
+	public HashMap<String, Object> getFood(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Product food = productMapper.selectFood(map);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			e.printStackTrace();
+		}
+		
+		return resultMap;
 	}
+	
+	
 }
