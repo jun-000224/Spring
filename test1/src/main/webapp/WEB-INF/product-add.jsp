@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제품 등록</title>
+    <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
@@ -17,17 +17,22 @@
         th{
             background-color: beige;
         }
+        .txt{
+            width: 270px;
+        }
+        
     </style>
 </head>
 <body>
     <div id="app">
+        <!-- html 코드는 id가 app인 태그 안에서 작업 -->
         <div>
             <table>
                 <tr>
                     <th>
                         카테고리
                     </th>
-                    <td>
+                    <td style="text-align: left;">
                         <select v-model="menuPart">
                             <option v-for="item in menuList" :value="item.menuNo">
                                 {{item.menuName}}
@@ -36,11 +41,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>
-                        제품번호(소분류)
-                    </th>
+                    <th>제품번호</th>
                     <td>
-                        <input v-model="menuNo" class="txt" placeholder="메뉴번호 입력">
+                        <input v-model="menuNo" class="txt">
                     </td>
                 </tr>
                 <tr>
@@ -48,7 +51,7 @@
                         음식명
                     </th>
                     <td>
-                        <input v-model="foodName">
+                        <input v-model="foodName" class="txt">
                     </td>
                 </tr>
                 <tr>
@@ -56,7 +59,7 @@
                         음식 설명
                     </th>
                     <td>
-                        <textarea v-model="foodInfo" cols="25" rows="5"></textarea>
+                        <textarea v-model="foodInfo" cols="35" rows="5"></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -64,7 +67,7 @@
                         가격
                     </th>
                     <td>
-                        <input v-model="price">
+                        <input v-model="price" class="txt">
                     </td>
                 </tr>
                 <tr>
@@ -78,7 +81,7 @@
             </table>
         </div> 
         <div>
-            <button @click="fnAddMenu">제품 등록</button>
+            <button @click="fnAdd">제품 등록</button>
         </div>
     </div>
 </body>
@@ -88,19 +91,21 @@
     const app = Vue.createApp({
         data() {
             return {
+                // 변수 - (key : value)
                 foodName : "",
                 foodInfo : "",
                 price : "",
-                menuNo : "", // 소분류 메뉴 번호
-                menuPart : "10", // 대분류 메뉴 번호
+                menuNo : "",
+                menuPart : "10",
                 menuList : []
             };
         },
         methods: {
+            // 함수(메소드) - (key : function())
             fnMenuList : function () {
                 let self = this;
                 let param = {
-                    depth : 1 // 1차 카테고리만 가져오기
+                    depth : 1
                 };
                 $.ajax({
                     url: "/product/menu.dox",
@@ -113,49 +118,54 @@
                     }
                 });
             },
-            // 파일 업로드를 위해 FormData 사용 방식으로 수정
-            fnAddMenu: function () {
+            fnAdd : function () {
                 let self = this;
-                
-                // FormData 객체 생성
-                let formData = new FormData();
-                
-                // 1. 텍스트 데이터 추가
-                formData.append('menuNo', self.menuNo);
-                formData.append('menuPart', self.menuPart);
-                formData.append('foodName', self.foodName);
-                formData.append('foodInfo', self.foodInfo);
-                formData.append('price', self.price);
-                
-                // 2. 파일 데이터 추가 (파일이 선택되었을 경우)
-                if ($('#file1')[0].files[0]) {
-                    formData.append('file1', $('#file1')[0].files[0]);
-                }
-                
-                // 3. jQuery.ajax()를 통해 FormData 전송
+                let param = {
+                    foodName : self.foodName,
+                    foodInfo : self.foodInfo,
+                    price : self.price,
+                    menuNo : self.menuNo,
+                    menuPart : self.menuPart,
+                };
                 $.ajax({
-                    url: "/product/add.dox", 
+                    url: "/product/add.dox",
                     dataType: "json",
                     type: "POST",
-                    data: formData, // data에 FormData 객체 전달
-                    processData: false, //  Query-string 변환 비활성화
-                    contentType: false, //  Multipart/form-data로 전송되도록 contentType 설정 비활성화
+                    data: param,
                     success: function (data) {
-                        if(data.result == "success") {
-                            alert("제품이 성공적으로 등록되었습니다.");
-                            location.href="/product.do"; 
+                        if(data.result == "success"){
+                            console.log(data);
+                            var form = new FormData();
+                            form.append( "file1",  $("#file1")[0].files[0] );
+                            form.append( "foodNo",  data.foodNo); 
+                            self.upload(form);  
+
+                            alert("등록되었습니다.");
+                            location.href="/product.do";
                         } else {
-                            alert("등록에 실패했습니다.");
+                            alert("오류가 발생했습니다.");
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        alert("서버 통신 중 오류가 발생했습니다.");
-                        console.error("Error:", error);
                     }
                 });
+            },
+
+            upload : function(form){
+                var self = this;
+                $.ajax({
+                    url : "/product/fileUpload.dox"
+                    , type : "POST"
+                    , processData : false
+                    , contentType : false
+                    , data : form
+                    , success:function(data) { 
+                        console.log(data);
+                    }	           
+                });
             }
-        },
+
+        }, // methods
         mounted() {
+            // 처음 시작할 때 실행되는 부분
             let self = this;
             self.fnMenuList();
         }

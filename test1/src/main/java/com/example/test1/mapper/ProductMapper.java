@@ -12,16 +12,18 @@ import com.example.test1.model.Product;
 public interface ProductMapper {
 	// 제품 목록
 	List<Product> selectProductList(HashMap<String, Object> map);
-
+	
 	// 메뉴 목록
 	List<Menu> selectMenuList(HashMap<String, Object> map);
-
-	// 메뉴(제품) 추가
-	int insertMenu(HashMap<String, Object> map);
-
-	// 제품 이미지 추가 (새로 추가된 메소드)
-	void insertFoodImage(HashMap<String, Object> map);
-
+	
+	// 제품 등록
+	int insertFood(HashMap<String, Object> map);
+	
+	// 제품 이미지 등록
+	int insertFoodImg(HashMap<String, Object> map);
+	
 	// 제품 상세 정보 조회
 	Product selectFood(HashMap<String, Object> map);
 }
+
+

@@ -1,28 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <title>쇼핑몰</title>
+    <title>쇼핑몰 헤더</title>
     <link rel="stylesheet" href="/css/product-style.css">
-    <style>
-        /* a 태그에 기본 적용되는 밑줄과 색상을 제거하기 위해 추가 */
-        .product-item {
-            text-decoration: none;
-            color: inherit;
-            display: block; /* a 태그를 블록 요소로 만들어 영역 전체를 클릭할 수 있게 함 */
-        }
-    </style>
+    <script src="/js/page-change.js"></script>
 </head>
+
 <body>
     <div id="app">
         <header>
             <div class="logo">
-                <a href="/product.do"><img src="/img/logo.png" alt="쇼핑몰 로고"></a>
+                <img src="/img/logo.png" alt="쇼핑몰 로고">
             </div>
 
             <nav>
@@ -43,19 +38,24 @@
                 <input v-model="keyword" @keyup.enter="fnList('', '')" type="text" placeholder="상품을 검색하세요...">
                 <button @click="fnList('', '')">검색</button>
             </div>
-            <div class="add-btn">
-                <button onclick="location.href='/product/add.do'">제품등록</button>
+            <div class="login-btn">
+                <button>로그인</button>
             </div>
         </header>
 
         <main>
             <section class="product-list">
-                <a v-for="item in list" :href="'/product/view.do?foodNo=' + item.foodNo" class="product-item">
-                    <img :src="item.filePath ? item.filePath : '/img/default.png'" alt="제품 이미지">
-                    <h3>{{item.foodName}}</h3>
-                    <p>{{item.foodInfo}}</p>
-                    <p class="price">₩{{item.price.toLocaleString()}}</p>
-                </a>
+                <!-- 제품 항목 -->
+
+                <div v-for="item in list" class="product-item">
+                    <a href="javascript:;" @click="fnView(item.foodNo)">
+                        <img :src="item.filePath" alt="제품 1">
+                        <h3>{{item.foodName}}</h3>
+                        <p>{{item.foodInfo}}</p>
+                        <p class="price">₩{{item.price.toLocaleString()}}</p>
+                    </a>
+                </div>
+
             </section>
         </main>
     </div>
@@ -89,6 +89,9 @@
                         self.menuList = data.menuList;
                     }
                 });
+            },
+            fnView : function(foodNo){
+                pageChange("/product/view.do", {foodNo : foodNo});
             }
         },
         mounted() {

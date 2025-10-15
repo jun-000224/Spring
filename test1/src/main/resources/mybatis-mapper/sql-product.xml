@@ -5,78 +5,58 @@
 <mapper namespace="com.example.test1.mapper.ProductMapper">
 	
 	<select id="selectProductList" parameterType="hashmap" resultType="com.example.test1.model.Product">
-		SELECT 
-			F.*, 
-			I.FILEPATH AS filePath
+		SELECT * 
 		FROM TBL_FOOD F
-		LEFT JOIN TBL_FOOD_IMG I ON F.FOOD_NO = I.FOOD_NO
-		WHERE 1=1
-		<if test="keyword != null and keyword != ''">
-			AND (F.FOOD_NAME LIKE '%' || #{keyword} || '%'
-			OR F.FOOD_INFO LIKE '%' || #{keyword} || '%')
-		</if>
+		INNER JOIN TBL_FOOD_IMG I ON F.FOOD_NO = I.FOOD_NO
+		WHERE 
+			(FOOD_NAME LIKE '%' || #{keyword} || '%'
+			OR FOOD_INFO LIKE '%' || #{keyword} || '%')
 		<if test="menuNo != null and menuNo != ''">
 			AND F.MENU_NO = #{menuNo}
 		</if>
 		<if test="menuPart != null and menuPart != ''">
 			AND F.MENU_PART = #{menuPart}
 		</if>
+			
+			
 	</select>
 	
 	<select id="selectMenuList" parameterType="hashmap" resultType="com.example.test1.model.Menu">
-		SELECT 
-		    M1.*,
-		    (SELECT COUNT(*) FROM TBL_MENU M2 WHERE M2.MENU_PART = M1.MENU_NO) AS CNT
-		FROM TBL_MENU M1
-		ORDER BY M1.MENU_NO
+		SELECT M.*, NVL(CNT, 0) AS CNT
+		FROM TBL_MENU M
+		LEFT JOIN (
+		    SELECT MENU_PART, COUNT(MENU_PART) AS CNT
+		    FROM TBL_MENU
+		    GROUP BY MENU_PART
+		) T ON M.MENU_NO = T.MENU_PART
+		<if test="depth != null and depth != ''">
+			WHERE DEPTH = #{depth}
+		</if>
+		
 	</select>
 	
-	<insert id="insertMenu" parameterType="hashmap">
-		<selectKey keyProperty="foodNo" resultType="int" order="BEFORE">
-			SELECT FOOD_SEQ.NEXTVAL FROM DUAL
-		</selectKey>
-		INSERT INTO TBL_FOOD (
-			FOOD_NO,
-			FOOD_NAME,
-			PRICE,
-			FOOD_INFO,
-			SELLYN,
-			MENU_NO,
-			MENU_PART
-		) VALUES (
-			#{foodNo},
-			#{foodName},
-			#{price},
-			#{foodInfo},
-			'Y',
-			#{menuNo},
-			#{menuPart}
-		)
+	<insert 
+		id="insertFood" 
+		parameterType="hashmap"
+		useGeneratedKeys="true" 
+		keyColumn="FOOD_NO" 
+		keyProperty="foodNo"
+	>
+		INSERT INTO TBL_FOOD
+		VALUES(FOOD_SEQ.NEXTVAL, #{foodName}, #{price}, '', #{foodInfo}, 'Y', #{menuNo}, #{menuPart})
 	</insert>
 	
-	<insert id="insertFoodImage" parameterType="hashmap">
-		INSERT INTO TBL_FOOD_IMG (
-			FOODFILE_NO,
-			FOOD_NO,
-			FILEPATH,
-			FILENAME,
-			FILEORGNAME,
-			FILESIZE,
-			FILEETC
-		) VALUES (
-			FOODFILE_SEQ.NEXTVAL,
-			#{foodNo},
-			#{filePath},
-			#{fileName},
-			#{orgName},
-			#{fileSize},
-			#{fileExt}
-		)
+	<insert id="insertFoodImg" parameterType="hashmap">
+		INSERT INTO TBL_FOOD_IMG
+		VALUES(FOODFILE_SEQ.NEXTVAL, #{foodNo}, #{path}, #{fileName}, #{orgName}, #{size}, #{ext}, 'Y')
 	</insert>
 	
-	<select id="selectFoodInfo" parameterType="hashmap" resultType="com.example.test1.model.Product">
-        SELECT * FROM TBL_FOOD
-        WHERE FOOD_NO = #{foodNo}
-    </select>
-	
+	<select id="selectFood" parameterType="hashmap" resultType="com.example.test1.model.Product">
+		SELECT *
+		FROM TBL_FOOD
+		WHERE FOOD_NO = #{foodNo}
+	</select>
 </mapper>
+
+
+

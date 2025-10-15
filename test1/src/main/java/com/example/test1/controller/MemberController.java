@@ -105,4 +105,34 @@ public class MemberController {
 		
 		return new Gson().toJson(resultMap);
 	}
+	
+	
+	@RequestMapping("/member/pwd.do") 
+    public String pwd(Model model) throws Exception{ 
+		
+        return "/member/pwd";
+    }
+	
+	
+	@RequestMapping(value = "/member/auth.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String auth(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		
+		System.out.println("Controller로 넘어온 데이터 : " + map);
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = memberService.checkMember(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/member/updatePwd.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String update(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = memberService.updatePwd(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 }

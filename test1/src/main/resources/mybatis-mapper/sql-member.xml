@@ -3,21 +3,20 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.test1.mapper.MemberMapper">
-	<select id="memberLogin" parameterType="hashmap" resultType="com.example.test1.model.Member">
-		SELECT *
-		FROM TBL_USER
-		WHERE USERID = #{id} AND PASSWORD = #{pwd}
-	</select>
-	
+
 	<select id="memberCheck" parameterType="hashmap" resultType="com.example.test1.model.Member">
 		SELECT *
 		FROM TBL_USER
-		WHERE USERID = #{id}   
+		WHERE USERID = #{userId}   
 	</select>
 	
 	<insert id="memberAdd" parameterType="hashmap">
-		INSERT INTO TBL_USER
-		VALUES(#{id}, #{pwd}, #{name}, NULL, NULL, NULL, #{addr}, #{phone}, NULL, #{gender}, #{status}, SYSDATE, SYSDATE)
+		INSERT INTO TBL_USER (
+			USERID, PASSWORD, NAME, ADDRESS, PHONE, EMAIL, GENDER, STATUS, CDATETIME, UDATETIME, CNT
+		)
+		VALUES(
+			#{id}, #{pwd}, #{name}, #{address}, #{phone}, #{email}, #{gender}, #{status}, SYSDATE, SYSDATE, 0
+		)
 	</insert>
 	
 	<select id="selectMemberList" parameterType="hashmap" resultType="com.example.test1.model.Member">
@@ -33,22 +32,35 @@
 	</select>
 	
 	<update id="cntIncrease" parameterType="hashmap">
-		<!-- 로그인 실패 시  -->
-		UPDATE TBL_USER
+	UPDATE TBL_USER
 		SET 
 			CNT = CNT + 1
-		WHERE USERID = #{id}
-	</update>
+		WHERE USERID = #{id}  </update>
 	
 	<update id="cntInit" parameterType="hashmap">
-		<!-- 로그인 성공 시 -->
 		UPDATE TBL_USER
 		SET 
 			CNT = 0
-		WHERE USERID = #{id}
+		WHERE USERID = #{id}  
+	</update>
+	
+	
+	<select id = "authMember" parameterType="hashmap" resultType="com.example.test1.model.Member"> 
+	SELECT * FROM TBL_USER
+	WHERE USERID = TRIM(#{userId})
+      AND NAME = TRIM(#{name})
+      AND REPLACE(PHONE, '-', '') = REPLACE(#{phone}, '-', '')
+	</select>
+	
+	
+	
+	<update id="updatePassword" parameterType="hashmap">
+	UPDATE TBL_USER
+	SET
+		PASSWORD = #{pwd}
+	WHERE
+		USERID = #{userId}
+	
 	</update>
 	
 </mapper>
-
-
-
