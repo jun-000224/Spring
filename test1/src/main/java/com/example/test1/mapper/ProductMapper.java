@@ -24,6 +24,10 @@ public interface ProductMapper {
 	
 	// 제품 상세 정보 조회
 	Product selectFood(HashMap<String, Object> map);
+	
+	//제품 결제 정보 삽입
+	int insertPayHistory(HashMap<String, Object> map);
+	//셀렉트가 아니라 리턴타입은 int
 }
 
 

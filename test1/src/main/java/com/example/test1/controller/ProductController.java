@@ -141,4 +141,14 @@ public class ProductController {
 		
 		return fileName;
 	}
+	
+	
+	@RequestMapping(value = "/product/payment.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String order(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = productService.addPayHistory(resultMap);
+		return new Gson().toJson(resultMap);
+	}
 }

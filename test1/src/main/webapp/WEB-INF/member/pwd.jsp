@@ -9,6 +9,8 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+
         <style>
             table,
             tr,
@@ -65,6 +67,7 @@
     </html>
 
     <script>
+        IMP.init("imp26875526");
         const app = Vue.createApp({
             data() {
                 return {
@@ -73,7 +76,7 @@
                     userId: '',
                     name: '',
                     phone: '',
-                    pwdCheck : '',
+                    pwdCheck: '',
                     newPwd: ''
                 };
             },
@@ -95,7 +98,8 @@
                         success: function (data) {
                             if (data.result === "success") {
                                 alert(data.msg);
-                                self.authFlg = true;
+                                self.fnCFertification();
+                                //self.authFlg = true;
                             } else {
                                 alert(data.msg);
                             }
@@ -105,19 +109,19 @@
                 fnUpdatePwd: function () {
                     let self = this;
 
-                    if (self.newPwd.trim() === ''){
+                    if (self.newPwd.trim() === '') {
                         alert("수정할 비밀번호를 입력해주세요")
                         return;
                     }
 
-                    if(self.newPwd !== self.pwdCheck){
+                    if (self.newPwd !== self.pwdCheck) {
                         alert("비밀번호가 일치하지 않습니다.")
                         return;
                     }
 
                     let param = {
-                        userId : self.userId, //누구꺼 바꿀건지
-                        pwd : self.newPwd  //바뀐 패스워드
+                        userId: self.userId, //누구꺼 바꿀건지
+                        pwd: self.newPwd  //바뀐 패스워드
                     };
                     $.ajax({
                         url: "/member/updatePwd.dox",
@@ -134,6 +138,33 @@
                             }
                         },
                     });
+                },
+                fnCFertification: function () {
+                    let self = this;
+                    alert("인증과정 실행!")
+                    // IMP.certification(param, callback) 호출
+                    IMP.certification(
+                        {
+                            // param
+                            channelKey: "channel-key-1254aac1-24c6-42fa-883f-510d680e5652",
+                            merchant_uid: "merchat_" + new Date().getTime(), // 주문 번호
+                            
+                        },
+                        function (rsp) {
+                            // callback
+                            if (rsp.success) {
+                                // 인증 성공 시 로직
+                                alert("인증 성공!");
+                                console.log(rsp);
+                                self.authFlg = true;
+                            } else {
+                                // 인증 실패 시 로직
+                                alert("인증 실패!");
+                                console.log(rsp)
+                            }
+                        },
+                    );
+
                 }
             }, // methods
             mounted() {

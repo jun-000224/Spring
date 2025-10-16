@@ -1,6 +1,5 @@
 package com.example.test1.common;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,11 +23,10 @@ public class SecurityConfig {
             )
             .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화 (필요 시 설정 가능)
             .formLogin(form -> form.disable()) // 기본 로그인 페이지 비활성화
-            .httpBasic(basic -> basic.disable()); // HTTP Basic 인증 비활성화
+            .httpBasic(basic -> basic.disable())
+            .headers(headers -> headers.cacheControl(cache -> cache.disable()))
+            ; // HTTP Basic 인증 비활성화
 
         return http.build();
     }
- 
-    
-    
 }

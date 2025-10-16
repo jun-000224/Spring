@@ -1,0 +1,26 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.test1.mapper.BbsMapper">
+	<select id="selectBbsList" parameterType="hashMap" resultType="com.example.test1.model.Bbs">
+	SELECT TITLE, CONTENTS, USERID
+	FROM TBL_BBS
+	</select>
+	
+	<insert id="insertBbs" parameterType="hashmap" 
+        useGeneratedKeys="true" 
+        keyProperty="bbsNum" 
+        keyColumn="BBS_NUM">
+    INSERT INTO TBL_BBS (BBS_NUM, TITLE, CONTENTS, USERID, HIT, CDATETIME, UDATETIME)
+    VALUES (SEQ_BBS.NEXTVAL, #{title}, #{contents}, #{userId}, 0, SYSDATE, SYSDATE)
+	</insert>
+	
+	<delete id="deleteBbs" parameterType="hashmap">
+	DELETE FROM TBL_BBS
+	WHERE BBS_NUM IN 
+	<foreach collection="list" item="bbsNum" open="(" separator="," close=")">
+            #{bbsNum}
+       </foreach>
+	</delete>
+
+</mapper>

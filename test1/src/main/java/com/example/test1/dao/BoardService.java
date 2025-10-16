@@ -64,7 +64,7 @@ public class BoardService {
 		
 		resultMap.put("fileList", fileList);
 		resultMap.put("info", board);
-		resultMap.put("result", "success");
+		resultMap.put("result", "success");boardService
 		return resultMap;
 		
 	}
@@ -87,16 +87,6 @@ public class BoardService {
 		
 		return resultMap;
 		
-	}
-	
-	//체크박스 선택 후 리스트로 삭제
-	public HashMap<String, Object> removeBoardList(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		int cnt = boardMapper.deleteBoardList(map);
-		
-		resultMap.put("result", "success");
-		return resultMap;
 	}
 
 	public void addBoardImg(HashMap<String, Object> map) {

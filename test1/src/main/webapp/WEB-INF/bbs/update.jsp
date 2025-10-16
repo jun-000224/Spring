@@ -25,14 +25,10 @@
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-         {{sessionName}}님 환영합니다!
-         메인 페이지입니다!
-         <div>
-            <a href="/board-list.do"><button>게시판으로 이동</button></a>
-            <a href="/product.do"><button>제품 목록으로 이동</button></a>
-            <a href="/bbs/list.do"><button>bbs게시판으로 이동</button></a>
-            <button @click="fnLogout">로그아웃</button>
-         </div>
+        <div><input type="text" v-model="title" placeholder="제목을 입력하세요"></div>
+        <div><textarea v-model="contents"></textarea></div>
+        <div>작성자 : {{userId}}</div>
+        <button @Click="fnUpdate">수정완료</button>
     </div>
 </body>
 </html>
@@ -42,23 +38,30 @@
         data() {
             return {
                 // 변수 - (key : value)
-                sessionId : "${sessionId}",
-                sessionName : "${sessionName}"
+                title : '',
+                contents : ''
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnLogout: function () {
+            fnUpdate: function () {
                 let self = this;
-                let param = {};
+                let param = {
+                    title : self.title,
+                    contents : self.contents
+                };
                 $.ajax({
-                    url: "/member/logout.dox",
+                    url: "/bbs/update.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        alert(data.msg);
-                        location.href="/member/login.do"
+                        if(data.result==="success"){
+                            alert("수정에 성공하였습니다!")
+                            location.href="/bbs/list.do"
+                        }else{
+                            alert("오류가 발생하였습니다!")
+                        }
                     }
                 });
             }

@@ -21,32 +21,32 @@ public class MemberController {
 	@Autowired
 	MemberService memberService;
 	
-	@RequestMapping("/member/login.do") 
+	@RequestMapping("/member/login.do")
     public String login(Model model) throws Exception{ 
 		
         return "/member/member-login";
     }
 	
-	@RequestMapping("/member/join.do") 
+	@RequestMapping("/member/join.do")
     public String join(Model model) throws Exception{ 
 		
         return "/member/member-join";
     }
 	
-	@RequestMapping("/mgr/member/list.do") 
+	@RequestMapping("/mgr/member/list.do")
     public String mgr(Model model) throws Exception{ 
 		
         return "/mgr/member-list";
     }
 	
-	@RequestMapping("/mgr/member/view.do") 
+	@RequestMapping("/mgr/member/view.do")
     public String view(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{ 
 		
 		request.setAttribute("userId", map.get("userId"));
         return "/mgr/member-view";
     }
 	
-	@RequestMapping("/addr.do") 
+	@RequestMapping("/addr.do")
     public String addr(Model model) throws Exception{ 
 		
         return "/jusoPopup";

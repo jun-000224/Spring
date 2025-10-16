@@ -97,5 +97,17 @@ public class ProductService {
 		
 		return resultMap;
 	}
+
+	public HashMap<String, Object> addPayHistory(HashMap<String, Object> map){
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			productMapper.insertPayHistory(map);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}
+		return resultMap;
+	}
 	
 }

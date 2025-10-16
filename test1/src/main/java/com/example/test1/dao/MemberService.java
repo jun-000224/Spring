@@ -36,7 +36,7 @@ public class MemberService {
 		if(member != null) {
 			if(member.getCnt() >= 5 ) {
 				message = "비밀번호를 5회 이상 잘못 입력하여 계정이 잠겼습니다.";
-			} else { 
+			} else {
 				String encodedPassword = member.getPassword();
 				boolean isMatch = passwordEncoder.matches(rawPassword, encodedPassword);
 				
@@ -105,7 +105,7 @@ public class MemberService {
 	public HashMap<String, Object> getMemberList(HashMap<String, Object> map){
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			List<Member> list =  memberMapper.selectMemberList(map);
+			List<Member> list = memberMapper.selectMemberList(map);
 			resultMap.put("list", list);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -144,12 +144,6 @@ public class MemberService {
 	}
 
 
-	/**
-	 * 비밀번호를 변경하는 메소드.
-	 * 1. 현재 사용자 정보를 DB에서 조회.
-	 * 2. 새 비밀번호가 현재 비밀번호와 동일한지 비교.
-	 * 3. 동일하지 않을 경우에만 암호화하여 DB 업데이트.
-	 */
 	public HashMap<String, Object> updatePwd(HashMap<String, Object> map){
 		HashMap<String, Object> resultMap = new HashMap<>();
 		
@@ -162,8 +156,6 @@ public class MemberService {
 			return resultMap;
 		}
 
-		// 1. DB에서 현재 사용자 정보를 가져옴 (기존 memberCheck 재활용)
-		//    이 로직이 제대로 동작하려면 map에 'userId'가 반드시 포함되어야 함!
 		Member member = memberMapper.memberCheck(map);
 		
 		if (member == null) {
@@ -172,7 +164,7 @@ public class MemberService {
 			return resultMap;
 		}
 
-		// 2. 새 비밀번호가 현재 비밀번호와 동일한지 비교
+		// 새 비밀번호가 현재 비밀번호와 동일한지 비교
 		String oldEncodedPassword = member.getPassword();
 		if (passwordEncoder.matches(rawPassword, oldEncodedPassword)) {
 			// 비밀번호가 같으면 실패 처리하고 함수 종료
@@ -181,7 +173,7 @@ public class MemberService {
 			return resultMap;
 		}
 		
-		// 3. (비밀번호가 다른 경우) 암호화 및 DB 업데이트 진행
+		// 비밀번호가 다른 경우, 암호화 및 DB 업데이트 진행
 		String encodedPassword = passwordEncoder.encode(rawPassword);
 		map.put("pwd", encodedPassword);
 		
@@ -191,7 +183,7 @@ public class MemberService {
 			if(cnt > 0) {
 				resultMap.put("result", "success");
 				resultMap.put("msg", "비밀번호가 성공적으로 변경되었습니다. 다시 로그인해주세요.");
-			} else {
+			} else{
 				resultMap.put("result", "fail");
 				resultMap.put("msg", "비밀번호 변경에 실패했습니다. 사용자 정보를 확인해주세요.");
 			}
@@ -202,4 +194,7 @@ public class MemberService {
 		
 		return resultMap;
 	}
+	
+	
+
 }

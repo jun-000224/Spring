@@ -33,5 +33,7 @@ public interface MemberMapper {
 	//비번 변경
 	int updatePassword(HashMap<String, Object> map);
 	
+
+	
 }
 

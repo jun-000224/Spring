@@ -12,18 +12,21 @@
             border : 1px solid black;
             border-collapse: collapse;
             padding : 5px 10px;
-            text-align: center;
         }
         th{
             background-color: beige;
         }
-    
+        input{
+            width: 350px;
+        }
+
     </style>
 </head>
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-         <table>
+        <div>
+            <table id="board">
                 <tr>
                     <th>제목</th>
                     <td>{{info.title}}</td>
@@ -40,28 +43,31 @@
                     <th>내용</th>
                     <td>
                         <img v-for="item in fileList" :src="item.filePath">
-                        {{info.contents}}
+                        <br>
+                        <div v-html ="info.contents2"></div>>
                     </td>
-                </tr>         
+                </tr>
             </table>
+        </div>
+        <hr>
 
-            <hr>
-            <table class="board" id="comment">
-            <tr v-for = "item in commentList">
+        <table id="comment">
+            <tr v-for="item in commentList">
                 <th>{{item.nickName}}</th>
-                <td>{{item.contents}}</td>
+                <td>{{item.contents2}}</td>
                 <td><button>삭제</button></td>
                 <td><button>수정</button></td>
-            </tr>
-            </table>
-            <hr>
-            <table id="input">
-                <th>댓글 입력</th>
-                <td>
-                    <textarea cols="40" rows="4" v-model="contents"></textarea>
-                </td>
-                <td><button @click="fnCommentAdd">저장</button></td>
-            </table>
+            </tr>   
+        </table>
+        <hr>
+        <table id="input">
+            <th>댓글 입력</th>
+            <td>
+                <textarea cols="40" rows="4" v-model="contents"></textarea>
+            </td>
+            <td><button @click="fnCommentAdd">저장</button></td>
+        </table>
+        <div style="margin-bottom : 500px;"></div>
     </div>
 </body>
 </html>
@@ -71,17 +77,17 @@
         data() {
             return {
                 // 변수 - (key : value)
-                boardNo : "${boardNo}", //request객체로 보낸 값임.
+                boardNo : "${boardNo}",
                 info : {},
                 commentList : [],
                 sessionId : "${sessionId}",
-                contents : "", //댓글 입력 v-model로 연결할 변수
+                contents : "",
                 fileList : []
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnInfo : function (boardNo) {
+            fnInfo : function () {
                 let self = this;
                 let param = {
                     boardNo : self.boardNo
@@ -93,18 +99,18 @@
                     data: param,
                     success: function (data) {
                         console.log(data);
+                        self.info = data.info;
                         self.commentList = data.commentList;
                         self.fileList = data.fileList;
-                        self.info = data.info;
                     }
                 });
             },
-            fnCommentAdd : function (boardNo) {
+            fnCommentAdd : function () {
                 let self = this;
-                let param = {  //xml이랑 연결되는 이름
-                    id : self.sessionId, //작성자 아이디
-                    contents : self.contents, //작성 내용
-                    boardNo : self.boardNo //어떤 게시글것인가
+                let param = {
+                    boardNo : self.boardNo,
+                    id : self.sessionId,
+                    contents : self.contents
                 };
                 $.ajax({
                     url: "/comment/add.dox",
@@ -112,9 +118,9 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
+                        alert(data.msg);
                         self.contents = "";
                         self.fnInfo();
-                        
                     }
                 });
             }
@@ -122,8 +128,7 @@
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
-            this.fnInfo();
-            
+            self.fnInfo();
         }
     });
 

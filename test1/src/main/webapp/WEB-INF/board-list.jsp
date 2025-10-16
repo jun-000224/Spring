@@ -19,7 +19,7 @@
             background-color: beige;
         }
         tr:nth-child(even){
-            background-color: rgb(244, 250, 250);
+            background-color: azure;
         }
         #index {
             margin-right: 5px;
@@ -70,7 +70,6 @@
         <div>
             <table>
                 <tr>
-                    <th><input type="checkbox" @click="fnAllCheck()"></th>
                     <th>번호</th>
                     <th>제목</th>
                     <th>작성자</th>
@@ -79,7 +78,6 @@
                     <th>삭제</th>
                 </tr>
                 <tr v-for="item in list">
-                    <td><input type="checkbox" :value="item.boardNo" v-model="selectItem"></td>
                     <td>{{item.boardNo}}</td>
                     <td>
                         <a href="javascript:;" @click="fnView(item.boardNo)">{{item.title}}</a>
@@ -106,7 +104,6 @@
         </div>
         <div>
             <a href="board-add.do"><button>글쓰기</button></a>
-            <a style="margin-right : 10px;"><button @click="fnAllRemove">삭제</button></a>
         </div>
         
     </div>
@@ -129,10 +126,7 @@
                 index : 0, // 최대 페이지 값
 
                 sessionId : "${sessionId}",
-                status : "${sessionStatus}",
-
-                selectFlg : false,
-                selectItem : []
+                status : "${sessionStatus}"
             };
         },
         methods: {
@@ -144,7 +138,6 @@
                     order : self.order,
                     keyword : self.keyword,
                     searchOption : self.searchOption,
-            
 
                     pageSize : self.pageSize,
                     page : (self.page-1) * self.pageSize
@@ -190,37 +183,6 @@
                 let self = this;
                 self.page += num;
                 self.fnList();
-            },
-            fnAllRemove : function(){
-                let self = this;
-                var fnList = JSON.stringify(self.selectItem);
-                var param = {selectItem : fnList};
-
-                $.ajax({
-                    url: "/board/deleteList.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        alert("삭제되었습니다!");
-                        self.fnList();
-						
-                    }
-                });
-
-            },
-            fnAllCheck : function() {
-                let self = this;
-                self.selectFlg = !self.selectFlg;
-                
-                if(self.selectFlg){
-                    self.selectItem = [];
-                    for(let i=0; i<self.list.length; i++){
-                        self.selectItem.push(self.list[i].boardNo);
-                    }
-                } else {
-                    self.selectItem = [];
-                }
             }
         }, // methods
         mounted() {

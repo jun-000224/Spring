@@ -95,7 +95,7 @@ public class BoardController {
 		String url = null;
 		String path="c:\\img";
 		try {
-			System.out.println("컨트롤러 진입 체크");
+
 			//String uploadpath = request.getServletContext().getRealPath(path);
 			String uploadpath = path;
 			String originFilename = multi.getOriginalFilename();
@@ -123,9 +123,8 @@ public class BoardController {
 				map.put("size", size);
 				map.put("ext", extName);
 				
-				
 				// insert 쿼리 실행
-				boardService.addBoardImg(map);
+			   boardService.addBoardImg(map);
 				
 				model.addAttribute("filename", multi.getOriginalFilename());
 				model.addAttribute("uploadPath", file.getAbsolutePath());
